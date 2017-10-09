@@ -1,0 +1,109 @@
+---
+title: "数据中不等式关系估计"
+author: "HeyangGong"
+date: "2017年10月4日"
+output: 
+    html_document:
+        toc: yes
+---
+
+```{r setup,eval=TRUE, echo=FALSE, warning=FALSE,message=FALSE}
+knitr::opts_chunk$set(
+  eval = TRUE,
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+gongfunc::set_py()
+```
+
+本文件的主要是研究和讨论数据中不等式关系估计。
+
+
+
+## 引言
+
+回归分析技术的主要功能是估计数据中的等式关系，等式关系 --> 等价关系 --> 充分必要条件关系。类似的，我们只估计数据中的不等式关系 --> 充分或者必要条件关系， 这就是本项目的主要内容。
+
+回归分析依附于概率模型，得到的等式估计具备有理论上的可解释性和估计的各种优良性质。同样的，我们可以定义一些模型，用合适的方法构造出优良的不等式估计。
+
+回归分析广泛应用于数据分析中，可以用于预测。不等式估计的方法运用于运筹管理学，例如 NCA, QCA， 用于发现数据中充分条件或者必要条件。
+
+## Quick start
+
+下面是一个我写的一种估计方法的 R 包的简单实例。
+
+
+```{r}
+library(estcondmin)
+set.seed(1)
+d <- estcondmin::gen_dat(n = 2000, beta = c(rep(1,10),rep(0, 30)))
+estcondmin::estcondmin(y = d$y,X = d$X, lambda = 0.37)
+estcondmin::estcondmin(y = d$y,X = d$X, lambda = 0)
+```
+
+算法优化： 默认算法中是以样本中心点来构建目标函数，但是可以使用不同的点来构建目标函数，进行变量选择。
+
+```{r}
+set.seed(123)
+d <- estcondmin::gen_dat(n = 2000, beta = c(rep(1,10),rep(0, 30)))
+estcondmin::estcondmin2(y = d$y,X = d$X, lambda = 0.37, epsilon = 0.01) -> x
+estcondmin::estcondmin2(y = d$y,X = d$X, lambda = 0.37, epsilon = 0.02) -> y
+estcondmin::estcondmin2(y = d$y,X = d$X, lambda = 0.37, epsilon = 0.03) -> z
+apply(matrix(c(x,y,z), ncol = 3),1, min)
+```
+
+确实能一定程度上去掉更多的不相关的变量。
+
+## 理解
+
+这是一种新的数据分析技术，从一维出发理解是非常好的理解方式。
+
+### 一维的数据画图理解
+
+```{r}
+library(tidyverse)
+d <- gen_dat()
+dat <- data.frame(y = d$y, d$X) 
+head(dat)
+beta <- estcondmin(d$y,d$X)
+ggplot(data = dat, aes(x = X2, y = y)) + geom_point() +
+  geom_abline(slope = beta[2], intercept = beta[1], color = "red", lty = 2) +
+  geom_abline(slope = 1, intercept = 1, color = "blue") + 
+  geom_point(data = NULL, aes(y = mean(dat$y), x = mean(dat$X2)), col = "red", size = 5)
+``` 
+
+
+
+
+### 条件本质上确界角度
+
+一般回归分析的本质是估计回归函数 $E(Y|X) = f(X)$, 分位数回归分析的本质是估计条件分位数 
+$Q_p(Y|X) = f(X)$, 类似的，我们的不等式关系估计方法，估计的是条件本质下却界 $Ess.inf(Y|X) = f(X)$. 从表面上看就是分位数回归的极端情况。
+
+
+### 其他
+
+
+
+
+## 应用
+
+本方法的应用于NCA，QCA等，可以回答如下形式的问题：
+
+- 给定数据集合A，得到一个新的样本的特征为 $x_1,...,x_p$, 该样本的某个关心特征 $y$， 给定数据的依据下， 是否有可能取到某个给定的直 $y_0$ 呢？
+- 给定一个学生的各种条件，根据历史数据，判断一个学生是否有可能得到 offer 呢？
+
+
+## 质疑
+
+
+1. 这种分析和 logistic 回归有什么不一样？ 是否包含在 logistic 回归的框架内？
+2. Linear discriminant analysis?
+3. 传统回归分析一般是指有95% 的置信区间。
+
+## 思考
+
+1. 该不等式估计方法的 理论性质如何证明？
+2. 估计的 oracle 性质？
+2. 该不等式估计的实际数据中的应用实例有哪些场景？

@@ -1,0 +1,46 @@
+---
+title: "Main note"
+author: "Heyang Gong"
+output: 
+  html_document: 
+    number_sections: yes
+    toc: yes
+---
+
+```{r setup,eval=TRUE, echo=FALSE, warning=FALSE,message=FALSE}
+knitr::opts_chunk$set(eval = FALSE, echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+This file aims to 
+
+```{r, include = F}
+gongfunc::set_py()
+library(tidyverse)
+file.create("README.md")
+file.create("what-brings-you-here.md")
+```
+
+
+
+## Quick start
+
+条件本质上确界的概念最初定义于 [Barron(2003)](https://link.springer.com/article/10.1007%2Fs00245-003-0776-4). 这个理论最简单的应用就是从 数据中估计出一些不等式，本质就是必要条件或者充分条件关系，详情见 `inquality-estimation-from-data`。
+
+### 慧慧的观点和建议
+
+[the least squares estimator of random variables under sublinear expectations](https://www.sciencedirect.com/science/article/pii/S0022247X17301701), In this paper, The conditional coherent risk measure is defined as 
+$$\mathop{ess.sup}_{p \in \mathcal{P}} E_P[X|\mathcal{F}_t]$$
+但是这个和条件本质上确界并不是一个东西。因为条件本质上却界 $Ess.sup[X|\mathcal{C}]$ 就是 几乎出处不小于 $X$ 的 $\mathcal{C}$ 可测随机变量中最小的一个。这个好像并不是。
+
+论文 [What risk measures are time consistent for all
+filtrations?](1007.0610.pdf) 中的定理Theorem 2.2. Let ρ be a coherent risk measure having the Fatou property with
+a time-consistent extension for any (simple) filtration of the probability space. then the risk $\rho(X)$ 可能是 它的本质上确界或者其他。似乎没有什么用！
+
+[Complex martingales and asymptotic enumeration](1064.08305.pdf) 文章中定义一个 conditional diameter
+$$diam(X) = \mathop{ess.sup}_{X,X^{'}独立复制}|X-X^{'}| \rightarrow diam(X|\mathcal{C}) = \mathop{ess.sup}(|X-X^{'}||\mathcal{C}) $$
+
+感觉这个玩意儿也没有什么用。不过这篇文章非常正式的引用了 Barron(2003). 
+
+[BACKWARD STOCHASTIC DIFFERENCE EQUATIONS AND NEARLY TIME-CONSISTENT NONLINEAR EXPECTATIONS](090763688.pdf) 中比较定理Theorem 3.2 (comparison theorem)的中的证明用到了这个条件本质上确界工具。
+
+
